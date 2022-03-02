@@ -113,64 +113,66 @@ class _MyAppState extends State<MyApp> {
     timer.tempo = tempo;
     print('build');
     return MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Column(
-            children: [
-              Text(
-                tempo.toString(),
-              ),
-              Text(
-                (4 - _count).toString(),
-              ),
-              Text(
-                (currentImgNum).toString() + '-' + (imgNum).toString(),
-              ),
-              TextButton(
-                onPressed: () {
-                  resetTimer();
-                },
-                child: const Text('start'),
-              ),
-              TextButton(
-                onPressed: () {
-                  timer.cancelTimer();
-                },
-                child: const Text('stop'),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset('assets/images/$currentImgNum.png'),
-                  Image.asset('assets/images/arrow.png'),
-                  Image.asset('assets/images/$imgNum.png'),
-                ],
-              ),
-              Expanded(
-                child: Container(
-                  width: double.infinity,
-                  child: TextField(
-                    maxLength: 3,
-                    maxLines: 1,
-                    onChanged: (value) {
-                      try {
-                        int intval = int.parse(value);
-                        if (intval > 400) {
-                          intval = 400;
-                        } else if (intval < 1) {
-                          intval = 1;
+      home: SafeArea(
+        child: Scaffold(
+          body: Center(
+            child: Column(
+              children: [
+                Text(
+                  tempo.toString(),
+                ),
+                Text(
+                  (4 - _count).toString(),
+                ),
+                Text(
+                  (currentImgNum).toString() + '-' + (imgNum).toString(),
+                ),
+                TextButton(
+                  onPressed: () {
+                    resetTimer();
+                  },
+                  child: const Text('start'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    timer.cancelTimer();
+                  },
+                  child: const Text('stop'),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset('assets/images/$currentImgNum.png'),
+                    Image.asset('assets/images/arrow.png'),
+                    Image.asset('assets/images/$imgNum.png'),
+                  ],
+                ),
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    child: TextField(
+                      maxLength: 3,
+                      maxLines: 1,
+                      onChanged: (value) {
+                        try {
+                          int intval = int.parse(value);
+                          if (intval > 400) {
+                            intval = 400;
+                          } else if (intval < 1) {
+                            intval = 1;
+                          }
+                          setState(() {
+                            tempo = intval;
+                          });
+                        } catch (e) {
+                          print(e);
                         }
-                        setState(() {
-                          tempo = intval;
-                        });
-                      } catch (e) {
-                        print(e);
-                      }
-                    },
+                      },
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

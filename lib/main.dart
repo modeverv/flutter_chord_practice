@@ -26,21 +26,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    precacheImage(const AssetImage('assets/images/haku1.png'), context);
-    precacheImage(const AssetImage('assets/images/haku2.png'), context);
-    precacheImage(const AssetImage('assets/images/haku3.png'), context);
-    precacheImage(const AssetImage('assets/images/haku4.png'), context);
-    precacheImage(const AssetImage('assets/images/1.png'), context);
-    precacheImage(const AssetImage('assets/images/2.png'), context);
-    precacheImage(const AssetImage('assets/images/3.png'), context);
-    precacheImage(const AssetImage('assets/images/4.png'), context);
-    precacheImage(const AssetImage('assets/images/5.png'), context);
-    precacheImage(const AssetImage('assets/images/6.png'), context);
-    precacheImage(const AssetImage('assets/images/7.png'), context);
-    precacheImage(const AssetImage('assets/images/to.png'), context);
-    precacheImage(const AssetImage('assets/images/play.png'), context);
-    precacheImage(const AssetImage('assets/images/stop.png'), context);
-    cache();
+    cacheImg();
+    cacheAudio();
     changeImgNum();
     WidgetsBinding.instance!.addObserver(this);
     SystemChrome.setPreferredOrientations([
@@ -62,12 +49,57 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     super.dispose();
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        cacheImg();
+        cacheAudio();
+        break;
+      case AppLifecycleState.inactive:
+        timer.cancelTimer();
+        setState(() {
+          mode = "play";
+        });
+        break;
+      case AppLifecycleState.paused:
+        timer.cancelTimer();
+        setState(() {
+          mode = "play";
+        });
+        break;
+      case AppLifecycleState.detached:
+        timer.cancelTimer();
+        setState(() {
+          mode = "play";
+        });
+        break;
+    }
+  }
+
+  void cacheImg() {
+    precacheImage(const AssetImage('assets/images/haku1.png'), context);
+    precacheImage(const AssetImage('assets/images/haku2.png'), context);
+    precacheImage(const AssetImage('assets/images/haku3.png'), context);
+    precacheImage(const AssetImage('assets/images/haku4.png'), context);
+    precacheImage(const AssetImage('assets/images/1.png'), context);
+    precacheImage(const AssetImage('assets/images/2.png'), context);
+    precacheImage(const AssetImage('assets/images/3.png'), context);
+    precacheImage(const AssetImage('assets/images/4.png'), context);
+    precacheImage(const AssetImage('assets/images/5.png'), context);
+    precacheImage(const AssetImage('assets/images/6.png'), context);
+    precacheImage(const AssetImage('assets/images/7.png'), context);
+    precacheImage(const AssetImage('assets/images/to.png'), context);
+    precacheImage(const AssetImage('assets/images/play.png'), context);
+    precacheImage(const AssetImage('assets/images/stop.png'), context);
+  }
+
   MyPeriodicTimer timer = MyPeriodicTimer();
   Soundpool pool = Soundpool(streamType: StreamType.ring);
 
   int soundIdOne = 0;
   int soundIdClick = 0;
-  Future<void> cache() async {
+  Future<void> cacheAudio() async {
     soundIdOne = await rootBundle
         .load("assets/sounds/beep.wav")
         .then((ByteData soundData) {
@@ -133,32 +165,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       delayedCount();
       await playSound();
     });
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    switch (state) {
-      case AppLifecycleState.resumed:
-        break;
-      case AppLifecycleState.inactive:
-        timer.cancelTimer();
-        setState(() {
-          mode = "play";
-        });
-        break;
-      case AppLifecycleState.paused:
-        timer.cancelTimer();
-        setState(() {
-          mode = "play";
-        });
-        break;
-      case AppLifecycleState.detached:
-        timer.cancelTimer();
-        setState(() {
-          mode = "play";
-        });
-        break;
-    }
   }
 
   @override

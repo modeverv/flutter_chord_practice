@@ -210,7 +210,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                   child: Slider(
                       value: tempo.toDouble(),
                       min: 30.0,
-                      max: 300.0,
+                      max: 450.0,
                       onChanged: (double x) {
                         setState(() {
                           tempo = x.toInt();

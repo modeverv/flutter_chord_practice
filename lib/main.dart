@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:soundpool/soundpool.dart';
 
-const SOUND_CLICK = 'sounds/click2.wav';
-const SOUND_CLICKA = 'assets/sounds/click2.wav';
+const SOUND_CLICK = 'sounds/pi.wav';
+const SOUND_CLICKA = 'assets/sounds/pi.wav';
 
 void main() {
   runApp(const MyApp());
@@ -48,7 +48,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> cache() async {
     _cache.loadAll([SOUND_CLICK]);
     soundId = await rootBundle
-        .load("assets/sounds/click2.wav")
+        .load("assets/sounds/pi.wav")
         .then((ByteData soundData) {
       return pool.load(soundData);
     });
@@ -75,11 +75,26 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  @override
   void dispose() {
     timer.cancelTimer();
   }
 
-  AudioPlayer? _player = null;
+  String mode = "play";
+  void toggle() {
+    if (mode == "play") {
+      resetTimer();
+      setState(() {
+        mode = "stop";
+      });
+    } else {
+      timer.cancelTimer();
+      setState(() {
+        mode = "play";
+      });
+    }
+  }
+
   void resetTimer() {
     print('resetTimer');
     timer.cancelTimer();
@@ -111,39 +126,62 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     timer.tempo = tempo;
-    print('build');
     return MaterialApp(
       home: SafeArea(
         child: Scaffold(
           body: Center(
             child: Column(
               children: [
-                Text(
-                  tempo.toString(),
-                ),
-                Text(
-                  (4 - _count).toString(),
-                ),
-                Text(
-                  (currentImgNum).toString() + '-' + (imgNum).toString(),
-                ),
-                TextButton(
-                  onPressed: () {
-                    resetTimer();
-                  },
-                  child: const Text('start'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    timer.cancelTimer();
-                  },
-                  child: const Text('stop'),
-                ),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    const Text('bpm'),
+                    Text(
+                      tempo.toString(),
+                      style: const TextStyle(fontSize: 96.0),
+                    ),
+                  ],
+                ),
+                SliderTheme(
+                  data: SliderTheme.of(context).copyWith(
+                    thumbShape:
+                        const RoundSliderThumbShape(enabledThumbRadius: 15.0),
+                    overlayShape:
+                        const RoundSliderOverlayShape(overlayRadius: 30.0),
+                    thumbColor: const Color(0xFFEB5757),
+                    activeTrackColor: const Color(0XFF0000FF),
+                    inactiveTrackColor: const Color(0xff8d8e98),
+                    overlayColor: const Color(0x29EB1555),
+                  ),
+                  child: Slider(
+                      value: tempo.toDouble(),
+                      min: 30.0,
+                      max: 300.0,
+                      onChanged: (double x) {
+                        setState(() {
+                          tempo = x.toInt();
+                        });
+                      }),
+                ),
+                Image.asset('assets/images/haku${_count + 1}.png'),
+                TextButton(
+                    onPressed: () {
+                      toggle();
+                    },
+                    child: Image.asset("assets/images/$mode.png")),
+//                TextButton(
+//                  onPressed: () {
+//                    timer.cancelTimer();
+//                  },
+//                  child: Image.asset("assets/images/stop.png"),
+//                ),
+                Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.asset('assets/images/$currentImgNum.png'),
-                    Image.asset('assets/images/arrow.png'),
+                    Image.asset('assets/images/to.png'),
                     Image.asset('assets/images/$imgNum.png'),
                   ],
                 ),

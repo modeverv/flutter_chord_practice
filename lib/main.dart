@@ -26,15 +26,39 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    precacheImage(const AssetImage('assets/images/haku1.png'), context);
+    precacheImage(const AssetImage('assets/images/haku2.png'), context);
+    precacheImage(const AssetImage('assets/images/haku3.png'), context);
+    precacheImage(const AssetImage('assets/images/haku4.png'), context);
+    precacheImage(const AssetImage('assets/images/1.png'), context);
+    precacheImage(const AssetImage('assets/images/2.png'), context);
+    precacheImage(const AssetImage('assets/images/3.png'), context);
+    precacheImage(const AssetImage('assets/images/4.png'), context);
+    precacheImage(const AssetImage('assets/images/5.png'), context);
+    precacheImage(const AssetImage('assets/images/6.png'), context);
+    precacheImage(const AssetImage('assets/images/7.png'), context);
+    precacheImage(const AssetImage('assets/images/to.png'), context);
+    precacheImage(const AssetImage('assets/images/play.png'), context);
+    precacheImage(const AssetImage('assets/images/stop.png'), context);
     cache();
     changeImgNum();
     WidgetsBinding.instance!.addObserver(this);
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance!.removeObserver(this);
     timer.cancelTimer();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     super.dispose();
   }
 

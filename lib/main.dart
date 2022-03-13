@@ -1,13 +1,9 @@
 import 'dart:math';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:chord_practice/logics/my_periodic_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:soundpool/soundpool.dart';
-
-const SOUND_CLICK = 'sounds/pi.wav';
-const SOUND_CLICKA = 'assets/sounds/pi.wav';
 
 void main() {
   runApp(const MyApp());
@@ -20,42 +16,44 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   int tempo = 60;
 
-  int _count = 0;
+  int _count = 3;
   int currentImgNum = 1;
-  int imgNum = 1;
-
-  Soundpool pool = Soundpool(streamType: StreamType.notification);
-
-  int soundId = 0;
-//  final player = AudioPlayer();
+  int nextImgNum = 1;
 
   @override
   void initState() {
     super.initState();
     cache();
     changeImgNum();
+    WidgetsBinding.instance!.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance!.removeObserver(this);
+    timer.cancelTimer();
+    super.dispose();
   }
 
   MyPeriodicTimer timer = MyPeriodicTimer();
+  Soundpool pool = Soundpool(streamType: StreamType.ring);
 
-  final AudioCache _cache = AudioCache(
-    fixedPlayer: AudioPlayer(mode: PlayerMode.LOW_LATENCY),
-  );
-
+  int soundIdOne = 0;
+  int soundIdClick = 0;
   Future<void> cache() async {
-    _cache.loadAll([SOUND_CLICK]);
-    soundId = await rootBundle
-        .load("assets/sounds/pi.wav")
+    soundIdOne = await rootBundle
+        .load("assets/sounds/beep.wav")
         .then((ByteData soundData) {
       return pool.load(soundData);
     });
-
-    //var duration = await player.setUrl('https://foo.com/bar.mp3');
-    //var duration = await player.setFilePath(SOUND_CLICKA);
-//    var duration = await player.setAsset(SOUND_CLICKA);
+    soundIdClick = await rootBundle
+        .load("assets/sounds/click.wav")
+        .then((ByteData soundData) {
+      return pool.load(soundData);
+    });
   }
 
   void delayedCount() {
@@ -70,18 +68,19 @@ class _MyAppState extends State<MyApp> {
 
   void changeImgNum() {
     setState(() {
-      currentImgNum = imgNum;
-      imgNum = Random().nextInt(7) + 1;
+      currentImgNum = nextImgNum;
+      nextImgNum = Random().nextInt(7) + 1;
     });
   }
 
-  @override
-  void dispose() {
-    timer.cancelTimer();
+  void changeTempo() {
+    if (mode == "stop") {
+      resetTimer();
+    }
   }
 
   String mode = "play";
-  void toggle() {
+  void togglePlayStop() {
     if (mode == "play") {
       resetTimer();
       setState(() {
@@ -95,32 +94,47 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  Future<void> playSound() async {
+    if (_count == 0) {
+      await pool.play(soundIdOne);
+    } else {
+      await pool.play(soundIdClick);
+    }
+  }
+
   void resetTimer() {
-    print('resetTimer');
     timer.cancelTimer();
     timer.tempo = tempo;
     timer.runTimer(() async {
       delayedCount();
-//      var now = DateTime.now();
-//      var formatter = DateFormat('HH:mm:ss.S');
-//      var formattedTime = formatter.format(now);
-//      print(formattedTime);
-//      await _cache.fixedPlayer?.stop();
-//      await _cache.fixedPlayer?.release();
-//      await _cache.fixedPlayer?.stop();
-//      if (null != _player) {
-//        await _player?.stop();
-//        await _player?.release();
-//        print('release');
-//      }
-//      _player = await _cache.play(SOUND_CLICK,
-//          mode: PlayerMode.LOW_LATENCY, isNotification: false);
-
-      int streamId = await pool.play(soundId);
-//      await player.stop();
-//      await player.seek(Duration(seconds: 0));
-//      await player.play();
+      await playSound();
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        break;
+      case AppLifecycleState.inactive:
+        timer.cancelTimer();
+        setState(() {
+          mode = "play";
+        });
+        break;
+      case AppLifecycleState.paused:
+        timer.cancelTimer();
+        setState(() {
+          mode = "play";
+        });
+        break;
+      case AppLifecycleState.detached:
+        timer.cancelTimer();
+        setState(() {
+          mode = "play";
+        });
+        break;
+    }
   }
 
   @override
@@ -129,6 +143,11 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: SafeArea(
         child: Scaffold(
+          appBar: AppBar(
+            title: const Text('CHORD PRACTICE'),
+            backgroundColor: Colors.black,
+          ),
+          backgroundColor: Colors.white,
           body: Center(
             child: Column(
               children: [
@@ -137,10 +156,19 @@ class _MyAppState extends State<MyApp> {
                   crossAxisAlignment: CrossAxisAlignment.baseline,
                   textBaseline: TextBaseline.alphabetic,
                   children: [
-                    const Text('bpm'),
+                    const Text(
+                      'bpm',
+                      style: TextStyle(
+                        fontSize: 24.0,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
                     Text(
                       tempo.toString(),
-                      style: const TextStyle(fontSize: 96.0),
+                      style: const TextStyle(
+                        fontSize: 96.0,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -163,50 +191,49 @@ class _MyAppState extends State<MyApp> {
                         setState(() {
                           tempo = x.toInt();
                         });
+                        changeTempo();
                       }),
                 ),
-                Image.asset('assets/images/haku${_count + 1}.png'),
-                TextButton(
+                SizedBox(
+                  height: 64.0,
+                  child: Image.asset(
+                    'assets/images/haku${_count + 1}.png',
+                    height: 48,
+                  ),
+                ),
+                SizedBox(
+                  height: 96.0,
+                  child: TextButton(
                     onPressed: () {
-                      toggle();
+                      togglePlayStop();
                     },
-                    child: Image.asset("assets/images/$mode.png")),
-//                TextButton(
-//                  onPressed: () {
-//                    timer.cancelTimer();
-//                  },
-//                  child: Image.asset("assets/images/stop.png"),
-//                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset('assets/images/$currentImgNum.png'),
-                    Image.asset('assets/images/to.png'),
-                    Image.asset('assets/images/$imgNum.png'),
-                  ],
+                    child: Image.asset(
+                      "assets/images/$mode.png",
+                      height: 80,
+                    ),
+                  ),
                 ),
                 Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    child: TextField(
-                      maxLength: 3,
-                      maxLines: 1,
-                      onChanged: (value) {
-                        try {
-                          int intval = int.parse(value);
-                          if (intval > 400) {
-                            intval = 400;
-                          } else if (intval < 1) {
-                            intval = 1;
-                          }
-                          setState(() {
-                            tempo = intval;
-                          });
-                        } catch (e) {
-                          print(e);
-                        }
-                      },
-                    ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: Image.asset(
+                          'assets/images/$currentImgNum.png',
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Image.asset('assets/images/to.png'),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: Image.asset(
+                          'assets/images/$nextImgNum.png',
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],

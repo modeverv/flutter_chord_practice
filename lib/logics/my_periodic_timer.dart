@@ -27,18 +27,15 @@ class MyPeriodicTimer {
 
   void runTimer(Function task) {
     double period = _getPeriod();
-    print(period);
     _timer = Timer.periodic(Duration(microseconds: period.toInt()), (timer) {
       task();
     });
-//    print('started');
     _maked = true;
   }
 
   void cancelTimer() {
     if (_maked) {
       _timer.cancel();
-      print('canceled');
       _maked = false;
     }
   }

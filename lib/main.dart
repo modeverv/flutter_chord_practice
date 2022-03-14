@@ -1,8 +1,10 @@
 import 'dart:math';
 
+import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:chord_practice/logics/my_periodic_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:soundpool/soundpool.dart';
 
 import 'components/bpm.dart';
@@ -12,7 +14,29 @@ import 'components/progression.dart';
 import 'components/slider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const RunApp());
+}
+
+class RunApp extends StatelessWidget {
+  const RunApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Clean Code',
+      home: AnimatedSplashScreen(
+        duration: 200,
+        splash: 'assets/images/splash.png',
+        nextScreen: const MyApp(),
+        splashTransition: SplashTransition.rotationTransition,
+        pageTransitionType: PageTransitionType.rightToLeft,
+      ),
+    );
+    return AnimatedSplashScreen(
+      splash: 'assets/images/splash.png',
+      nextScreen: const MyApp(),
+    );
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -38,8 +62,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    cacheImg();
-    cacheAudio();
+    Future.delayed(Duration.zero, () {
+      cacheImg();
+      cacheAudio();
+    });
     changeImgNum();
     WidgetsBinding.instance!.addObserver(this);
     SystemChrome.setPreferredOrientations([

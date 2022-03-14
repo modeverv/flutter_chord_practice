@@ -38,6 +38,7 @@ dependencies:
   audioplayers: ^0.20.1
   just_audio: ^0.9.20
   soundpool: ^2.3.0
+  animated_splash_screen: ^1.2.0
 
 dev_dependencies:
   flutter_test:

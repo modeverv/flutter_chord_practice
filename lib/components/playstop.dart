@@ -12,17 +12,23 @@ class PlayStopWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 30.0,
-      child: TextButton(
-        onPressed: onPress,
-        child: Image.asset(
-          "assets/images/$mode.png",
-          height: 72,
-          width: 72,
-          fit: BoxFit.fill,
-        ),
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SizedBox(
+          height: constraints.maxWidth > 600 ? 8 * 14 : 80,
+          child: TextButton(
+            onPressed: onPress,
+            child: Image.asset(
+              "assets/images/$mode.png",
+              height: constraints.maxWidth > 600 ? 8 * 14 : 80,
+              fit: BoxFit.fill,
+            ),
+//            style: TextButton.styleFrom(
+//              fixedSize: const Size.fromHeight(30),
+//            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -12,20 +12,23 @@ class SliderWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliderTheme(
-      data: SliderTheme.of(context).copyWith(
-        thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 15.0),
-        overlayShape: const RoundSliderOverlayShape(overlayRadius: 30.0),
-        thumbColor: const Color(0xFFEB5757),
-        activeTrackColor: const Color(0XFF0000FF),
-        inactiveTrackColor: const Color(0xff8d8e98),
-        overlayColor: const Color(0x29EB1555),
-      ),
-      child: Slider(
-        value: tempo.toDouble(),
-        min: 30.0,
-        max: 300.0,
-        onChanged: onChanged,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+      child: SliderTheme(
+        data: SliderTheme.of(context).copyWith(
+          thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 15.0),
+          overlayShape: const RoundSliderOverlayShape(overlayRadius: 30.0),
+          thumbColor: const Color(0xFFEB5757),
+          activeTrackColor: const Color(0XFF0000FF),
+          inactiveTrackColor: const Color(0xff8d8e98),
+          overlayColor: const Color(0x29EB1555),
+        ),
+        child: Slider(
+          value: tempo.toDouble(),
+          min: 30.0,
+          max: 300.0,
+          onChanged: onChanged,
+        ),
       ),
     );
   }

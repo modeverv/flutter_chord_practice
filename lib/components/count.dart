@@ -11,12 +11,14 @@ class CountWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 64.0,
-      child: Image.asset(
-        'assets/images/haku${_count + 1}.png',
-        height: 48,
-      ),
-    );
+    return LayoutBuilder(builder: (context, constraints) {
+      return SizedBox(
+        height: constraints.maxWidth > 600 ? 72.0 : 64.0,
+        child: Image.asset(
+          'assets/images/haku${_count + 1}.png',
+          height: constraints.maxWidth > 600 ? 72 : 48,
+        ),
+      );
+    });
   }
 }

@@ -38,7 +38,7 @@ dependencies:
   audioplayers: ^0.20.1
   just_audio: ^0.9.20
   soundpool: ^2.3.0
-  animated_splash_screen: ^1.2.0
+  flutter_native_splash: ^2.1.1
 
 dev_dependencies:
   flutter_test:
@@ -94,3 +94,6 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+flutter_native_splash:
+  image: "assets/images/splash.png"
+  color: "FFFFFF"

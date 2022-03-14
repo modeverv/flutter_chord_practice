@@ -8,4 +8,4 @@ open build/app/outputs/apk/release
 flutter build web --web-renderer html --release
 open build/web
 flutter build macos --release
-open build/macos/Build/Products/Release
+open build/mac os/Build/Products/Release

@@ -5,6 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:soundpool/soundpool.dart';
 
+import 'components/bpm.dart';
+import 'components/count.dart';
+import 'components/playstop.dart';
+import 'components/progression.dart';
+import 'components/slider.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -18,10 +24,16 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   int tempo = 60;
-
   int _count = 3;
   int currentImgNum = 1;
   int nextImgNum = 1;
+  MyPeriodicTimer timer = MyPeriodicTimer();
+  Soundpool pool = Soundpool(streamType: StreamType.ring);
+  int soundIdOne = 0;
+  int soundIdClick = 0;
+  String modePlay = "play";
+  String modeStop = "stop";
+  String mode = "";
 
   @override
   void initState() {
@@ -34,6 +46,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+    timer.tempo = tempo;
+    mode = modePlay;
   }
 
   @override
@@ -58,21 +72,15 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         break;
       case AppLifecycleState.inactive:
         timer.cancelTimer();
-        setState(() {
-          mode = "play";
-        });
+        changeToStop();
         break;
       case AppLifecycleState.paused:
         timer.cancelTimer();
-        setState(() {
-          mode = "play";
-        });
+        changeToStop();
         break;
       case AppLifecycleState.detached:
         timer.cancelTimer();
-        setState(() {
-          mode = "play";
-        });
+        changeToStop();
         break;
     }
   }
@@ -94,11 +102,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     precacheImage(const AssetImage('assets/images/stop.png'), context);
   }
 
-  MyPeriodicTimer timer = MyPeriodicTimer();
-  Soundpool pool = Soundpool(streamType: StreamType.ring);
-
-  int soundIdOne = 0;
-  int soundIdClick = 0;
   Future<void> cacheAudio() async {
     soundIdOne = await rootBundle
         .load("assets/sounds/beep.wav")
@@ -129,24 +132,31 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     });
   }
 
+  void changeToPlaying() {
+    setState(() {
+      mode = modeStop;
+    });
+  }
+
+  void changeToStop() {
+    setState(() {
+      mode = modePlay;
+    });
+  }
+
   void changeTempo() {
-    if (mode == "stop") {
+    if (mode == modeStop) {
       resetTimer();
     }
   }
 
-  String mode = "play";
   void togglePlayStop() {
-    if (mode == "play") {
+    if (mode == modePlay) {
       resetTimer();
-      setState(() {
-        mode = "stop";
-      });
+      changeToPlaying();
     } else {
       timer.cancelTimer();
-      setState(() {
-        mode = "play";
-      });
+      changeToStop();
     }
   }
 
@@ -169,7 +179,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    timer.tempo = tempo;
     return MaterialApp(
       home: SafeArea(
         child: Scaffold(
@@ -181,91 +190,25 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           body: Center(
             child: Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  children: [
-                    const Text(
-                      'bpm',
-                      style: TextStyle(
-                        fontSize: 24.0,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    Text(
-                      tempo.toString(),
-                      style: const TextStyle(
-                        fontSize: 96.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+                BpmWidget(tempo: tempo),
+                SliderWidget(
+                  tempo: tempo,
+                  onChanged: (double x) {
+                    setState(() {
+                      tempo = x.toInt();
+                    });
+                    changeTempo();
+                  },
                 ),
-                SliderTheme(
-                  data: SliderTheme.of(context).copyWith(
-                    thumbShape:
-                        const RoundSliderThumbShape(enabledThumbRadius: 15.0),
-                    overlayShape:
-                        const RoundSliderOverlayShape(overlayRadius: 30.0),
-                    thumbColor: const Color(0xFFEB5757),
-                    activeTrackColor: const Color(0XFF0000FF),
-                    inactiveTrackColor: const Color(0xff8d8e98),
-                    overlayColor: const Color(0x29EB1555),
-                  ),
-                  child: Slider(
-                      value: tempo.toDouble(),
-                      min: 30.0,
-                      max: 200.0,
-                      onChanged: (double x) {
-                        setState(() {
-                          tempo = x.toInt();
-                        });
-                        changeTempo();
-                      }),
+                CountWidget(count: _count),
+                PlayStopWidget(
+                  mode: mode,
+                  onPress: () {
+                    togglePlayStop();
+                  },
                 ),
-                SizedBox(
-                  height: 64.0,
-                  child: Image.asset(
-                    'assets/images/haku${_count + 1}.png',
-                    height: 48,
-                  ),
-                ),
-                SizedBox(
-                  height: 96.0,
-                  child: TextButton(
-                    onPressed: () {
-                      togglePlayStop();
-                    },
-                    child: Image.asset(
-                      "assets/images/$mode.png",
-                      height: 80,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: Image.asset(
-                          'assets/images/$currentImgNum.png',
-                        ),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: Image.asset('assets/images/to.png'),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: Image.asset(
-                          'assets/images/$nextImgNum.png',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                ProgressionWidget(
+                    currentImgNum: currentImgNum, nextImgNum: nextImgNum),
               ],
             ),
           ),

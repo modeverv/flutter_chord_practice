@@ -2,26 +2,17 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>compileBitcode</key>
-    <true/>
-    <key>destination</key>
-    <string>export</string>
-    <key>method</key>
-    <string>development</string>
-    <key>provisioningProfiles</key>
-    <dict>
-        <key>com.takamiii.flutter.ipa</key>
-        <string>flutteripa</string>
-    </dict>
-    <key>signingCertificate</key>
-    <string>74a8499d-b257-460d-88dd-ada5582f7650</string>
-    <key>signingStyle</key>
-    <string>manual</string>
-    <key>stripSwiftSymbols</key>
-    <true/>
-    <key>teamID</key>
-    <string>27M46XK77Z</string>
-    <key>thinning</key>
-    <string>&lt;none&gt;</string>
+	<key>destination</key>
+	<string>export</string>
+	<key>method</key>
+	<string>app-store</string>
+	<key>signingStyle</key>
+	<string>automatic</string>
+	<key>stripSwiftSymbols</key>
+	<true/>
+	<key>teamID</key>
+	<string>N8KFLUW49V</string>
+	<key>uploadSymbols</key>
+	<true/>
 </dict>
 </plist>

@@ -1,8 +1,10 @@
 import 'dart:math';
 
+import 'package:chord_practice/components/app_banner.dart';
 import 'package:chord_practice/logics/my_periodic_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:soundpool/soundpool.dart';
 
 import 'components/bpm.dart';
@@ -11,7 +13,10 @@ import 'components/playstop.dart';
 import 'components/progression.dart';
 import 'components/slider.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
+
   runApp(const MyApp());
 }
 
@@ -51,6 +56,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     timer.tempo = tempo;
     mode = modePlay;
   }
+
+  AnchoredAdaptiveBannerAdSize? size;
 
   @override
   void dispose() {
@@ -211,6 +218,38 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 ),
                 ProgressionWidget(
                     currentImgNum: currentImgNum, nextImgNum: nextImgNum),
+                Builder(builder: (context) {
+                  return FutureBuilder(
+                    future: AdSize.getAnchoredAdaptiveBannerAdSize(
+                        Orientation.portrait,
+                        MediaQuery.of(context).size.width.truncate()),
+                    builder: (
+                      BuildContext context,
+                      AsyncSnapshot<AnchoredAdaptiveBannerAdSize?> snapshot,
+                    ) {
+                      if (snapshot.hasData) {
+                        final data = snapshot.data;
+                        if (data != null) {
+                          return Container(
+                            height: 70,
+                            color: Colors.white70,
+                            child: AdBanner(size: data),
+                          );
+                        } else {
+                          return Container(
+                            height: 70,
+                            color: Colors.white70,
+                          );
+                        }
+                      } else {
+                        return Container(
+                          height: 70,
+                          color: Colors.white70,
+                        );
+                      }
+                    },
+                  );
+                })
               ],
             ),
           ),

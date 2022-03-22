@@ -5,5 +5,12 @@
 ## build, apk, ipa, web, macos
 
 ```shell
-./bundle.sh
+# make ipa and apk
+make all
+# clean
+make clean
+# ipa
+make ipa
+# apk 
+make apk
 ```

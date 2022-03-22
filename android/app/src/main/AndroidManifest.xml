@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.chord_practice">
    <application
-        android:label="chord practice"
+        android:label="Metronome_with_diatonic_chord_progression_practice"
         android:icon="@mipmap/ic_launcher">
         <meta-data
            android:name="com.google.android.gms.ads.APPLICATION_ID"

@@ -45,8 +45,8 @@ class _AdBannerState extends State<AdBanner> {
             ? 'ca-app-pub-3940256099942544/6300978111'
             : 'ca-app-pub-3940256099942544/6300978111')
         : (kReleaseMode
-            ? 'ca-app-pub-3940256099942544/2934735716'
-            : 'ca-app-pub-3940256099942544/2934735716');
+            ? 'ca-app-pub-3940256099942544/6300978111'
+            : 'ca-app-pub-3940256099942544/6300978111');
   }
 
   BannerAd _createBanner(AdSize size) {
